@@ -14,13 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHomepageData = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
-const fs_1 = __importDefault(require("fs"));
+const homepageData_1 = __importDefault(require("../../data/homepageData"));
 const getHomepageData = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const homepageData = yield fs_1.default.promises.readFile("json/homepageData.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
-        data: JSON.parse(homepageData),
+        data: homepageData_1.default,
     });
 }));
 exports.getHomepageData = getHomepageData;

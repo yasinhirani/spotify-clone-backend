@@ -14,40 +14,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFeaturedCharts = exports.getPopularRadios = exports.getPopularAlbums = exports.getPopularArtists = void 0;
 const asyncHandler_1 = __importDefault(require("../../../utils/asyncHandler"));
-const fs_1 = __importDefault(require("fs"));
+const popularArtists_1 = __importDefault(require("../../../data/popularArtists"));
+const popularAlbums_1 = __importDefault(require("../../../data/popularAlbums"));
+const popularRadios_1 = __importDefault(require("../../../data/popularRadios"));
+const featuredCharts_1 = __importDefault(require("../../../data/featuredCharts"));
 const getPopularArtists = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const popularArtists = yield fs_1.default.promises.readFile("json/popularArtists.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
-        data: JSON.parse(popularArtists),
+        data: popularArtists_1.default,
     });
 }));
 exports.getPopularArtists = getPopularArtists;
 const getPopularAlbums = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const popularAlbums = yield fs_1.default.promises.readFile("json/popularAlbums.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
-        data: JSON.parse(popularAlbums),
+        data: popularAlbums_1.default,
     });
 }));
 exports.getPopularAlbums = getPopularAlbums;
 const getPopularRadios = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const popularRadios = yield fs_1.default.promises.readFile("json/popularRadios.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
-        data: JSON.parse(popularRadios),
+        data: popularRadios_1.default,
     });
 }));
 exports.getPopularRadios = getPopularRadios;
 const getFeaturedCharts = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const featuredCharts = yield fs_1.default.promises.readFile("json/featuredCharts.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
-        data: JSON.parse(featuredCharts),
+        data: featuredCharts_1.default,
     });
 }));
 exports.getFeaturedCharts = getFeaturedCharts;
