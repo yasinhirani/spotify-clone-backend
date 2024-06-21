@@ -30,6 +30,6 @@ const sendMail = (recipient, link) => __awaiter(void 0, void 0, void 0, function
         subject: "verify your email",
         html: `<div><p>please click the link below to verify your email address</p><a href=${link}>verify email</a></div>`,
     };
-    transporter.sendMail(mail);
+    yield transporter.sendMail(mail);
 });
 exports.default = sendMail;

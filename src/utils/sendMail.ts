@@ -19,7 +19,7 @@ const sendMail = async (recipient: string, link: string) => {
     html: `<div><p>please click the link below to verify your email address</p><a href=${link}>verify email</a></div>`,
   };
 
-  transporter.sendMail(mail);
+  await transporter.sendMail(mail);
 };
 
 export default sendMail;
