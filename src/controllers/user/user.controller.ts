@@ -17,7 +17,7 @@ const login = asyncHandler(
       );
       if (isPasswordCorrect) {
         if (!user.emailVerified) {
-          const link = `http://localhost:8080/api/user/verifyEmail?token=${generateJsonWebToken(
+          const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
             user.email
           )}`;
           await sendMail(user.email, link);
@@ -66,7 +66,7 @@ const signup = asyncHandler(
       };
       await User.create(userBody);
 
-      const link = `http://localhost:8080/api/user/verifyEmail?token=${generateJsonWebToken(
+      const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
         req.body.email
       )}`;
       await sendMail(req.body.email, link);

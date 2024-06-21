@@ -25,7 +25,7 @@ const login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, 
         const isPasswordCorrect = yield bcrypt_1.default.compare(req.body.password, user.password);
         if (isPasswordCorrect) {
             if (!user.emailVerified) {
-                const link = `http://localhost:8080/api/user/verifyEmail?token=${(0, generateJwt_1.default)(user.email)}`;
+                const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(user.email)}`;
                 yield (0, sendMail_1.default)(user.email, link);
             }
             res.status(200).json({
@@ -68,7 +68,7 @@ const signup = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0,
     else {
         const userBody = Object.assign(Object.assign({}, req.body), { emailVerified: false });
         yield user_model_1.User.create(userBody);
-        const link = `http://localhost:8080/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
+        const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
         yield (0, sendMail_1.default)(req.body.email, link);
         res.status(201).json({
             success: true,
