@@ -5,7 +5,7 @@ import fs from "fs";
 const getPopularArtists = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const popularArtists = await fs.promises.readFile(
-      "src/json/popularArtists.json",
+      "json/popularArtists.json",
       { encoding: "utf-8" }
     );
     res.status(200).json({
@@ -19,7 +19,7 @@ const getPopularArtists = asyncHandler(
 const getPopularAlbums = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const popularAlbums = await fs.promises.readFile(
-      "src/json/popularAlbums.json",
+      "json/popularAlbums.json",
       { encoding: "utf-8" }
     );
     res.status(200).json({
@@ -33,7 +33,7 @@ const getPopularAlbums = asyncHandler(
 const getPopularRadios = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const popularRadios = await fs.promises.readFile(
-      "src/json/popularRadios.json",
+      "json/popularRadios.json",
       { encoding: "utf-8" }
     );
     res.status(200).json({
@@ -47,7 +47,7 @@ const getPopularRadios = asyncHandler(
 const getFeaturedCharts = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const featuredCharts = await fs.promises.readFile(
-      "src/json/featuredCharts.json",
+      "json/featuredCharts.json",
       { encoding: "utf-8" }
     );
     res.status(200).json({

@@ -16,7 +16,7 @@ exports.getHomepageData = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const fs_1 = __importDefault(require("fs"));
 const getHomepageData = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const homepageData = yield fs_1.default.promises.readFile("src/json/homepageData.json", { encoding: "utf-8" });
+    const homepageData = yield fs_1.default.promises.readFile("json/homepageData.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",

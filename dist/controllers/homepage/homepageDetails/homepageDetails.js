@@ -16,7 +16,7 @@ exports.getFeaturedCharts = exports.getPopularRadios = exports.getPopularAlbums 
 const asyncHandler_1 = __importDefault(require("../../../utils/asyncHandler"));
 const fs_1 = __importDefault(require("fs"));
 const getPopularArtists = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const popularArtists = yield fs_1.default.promises.readFile("src/json/popularArtists.json", { encoding: "utf-8" });
+    const popularArtists = yield fs_1.default.promises.readFile("json/popularArtists.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
@@ -25,7 +25,7 @@ const getPopularArtists = (0, asyncHandler_1.default)((req, res, next) => __awai
 }));
 exports.getPopularArtists = getPopularArtists;
 const getPopularAlbums = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const popularAlbums = yield fs_1.default.promises.readFile("src/json/popularAlbums.json", { encoding: "utf-8" });
+    const popularAlbums = yield fs_1.default.promises.readFile("json/popularAlbums.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
@@ -34,7 +34,7 @@ const getPopularAlbums = (0, asyncHandler_1.default)((req, res, next) => __await
 }));
 exports.getPopularAlbums = getPopularAlbums;
 const getPopularRadios = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const popularRadios = yield fs_1.default.promises.readFile("src/json/popularRadios.json", { encoding: "utf-8" });
+    const popularRadios = yield fs_1.default.promises.readFile("json/popularRadios.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
@@ -43,7 +43,7 @@ const getPopularRadios = (0, asyncHandler_1.default)((req, res, next) => __await
 }));
 exports.getPopularRadios = getPopularRadios;
 const getFeaturedCharts = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const featuredCharts = yield fs_1.default.promises.readFile("src/json/featuredCharts.json", { encoding: "utf-8" });
+    const featuredCharts = yield fs_1.default.promises.readFile("json/featuredCharts.json", { encoding: "utf-8" });
     res.status(200).json({
         success: true,
         message: "",
