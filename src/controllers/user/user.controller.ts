@@ -33,7 +33,7 @@ const login = asyncHandler(
           },
         });
       } else {
-        res.status(403).json({
+        res.status(401).json({
           success: false,
           message: "Email or password is incorrect",
           data: null,
