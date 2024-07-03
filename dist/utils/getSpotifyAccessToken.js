@@ -16,8 +16,8 @@ const axios_1 = __importDefault(require("axios"));
 const getSpotifyAccessToken = () => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield axios_1.default.post("https://accounts.spotify.com/api/token", {
         grant_type: "client_credentials",
-        client_id: "fe25bbed2ffe4b83be86f915af4ed742",
-        client_secret: "9eeafb1b036d482bad2ae541e6dab984",
+        client_id: process.env.SPOTIFY_CLIENT_ID,
+        client_secret: process.env.SPOTIFY_CLIENT_SECRET,
     }, {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
