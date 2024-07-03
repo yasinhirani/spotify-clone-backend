@@ -29,7 +29,7 @@ const getPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(vo
 exports.getPlaylist = getPlaylist;
 const getFeaturedPlaylists = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { limit } = req.query;
-    const response = yield axiosInstance_1.default.get(`/v1/browse/featured-playlists?locale=en_IN&limit=${limit}&offset=0`);
+    const response = yield axiosInstance_1.default.get(`/v1/browse/featured-playlists?locale=IN&limit=${limit}&offset=0`);
     res.status(200).json({
         success: true,
         message: "",

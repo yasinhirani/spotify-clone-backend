@@ -22,7 +22,7 @@ const getFeaturedPlaylists = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { limit } = req.query;
     const response = await axiosInstance.get(
-      `/v1/browse/featured-playlists?locale=en_IN&limit=${limit}&offset=0`
+      `/v1/browse/featured-playlists?locale=IN&limit=${limit}&offset=0`
     );
 
     res.status(200).json({
