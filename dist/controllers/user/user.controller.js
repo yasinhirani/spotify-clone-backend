@@ -14,17 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendVerificationEmail = exports.verifyEmail = exports.signup = exports.login = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
-const user_model_1 = require("../../model/user/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const generateJwt_1 = __importDefault(require("../../utils/generateJwt"));
 const sendMail_1 = __importDefault(require("../../utils/sendMail"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const queryExecuter_1 = __importDefault(require("../../utils/queryExecuter"));
 const login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findOne({ email: req.body.email });
+    const user = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${req.body.email}'`);
     if (user) {
         const isPasswordCorrect = yield bcrypt_1.default.compare(req.body.password, user.password);
         if (isPasswordCorrect) {
-            if (!user.emailVerified) {
+            if (!user.email_verified) {
                 const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(user.email)}`;
                 yield (0, sendMail_1.default)(user.email, link);
             }
@@ -32,9 +32,10 @@ const login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, 
                 success: true,
                 message: "Login successfully",
                 data: {
+                    id: user.id,
                     name: user.name,
                     email: user.email,
-                    emailVerified: user.emailVerified,
+                    emailVerified: user.email_verified,
                     access_token: (0, generateJwt_1.default)(user.email),
                 },
             });
@@ -57,7 +58,7 @@ const login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, 
 }));
 exports.login = login;
 const signup = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findOne({ email: req.body.email });
+    const user = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${req.body.email}'`);
     if (user) {
         res.status(400).json({
             success: false,
@@ -66,8 +67,8 @@ const signup = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0,
         });
     }
     else {
-        const userBody = Object.assign(Object.assign({}, req.body), { emailVerified: false });
-        yield user_model_1.User.create(userBody);
+        const encryptedPassword = yield bcrypt_1.default.hash(req.body.password, 12);
+        yield (0, queryExecuter_1.default)(`INSERT INTO users (name, email, password, email_verified) VALUES ('${req.body.name}', '${req.body.email}', '${encryptedPassword}', ${false})`);
         const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
         yield (0, sendMail_1.default)(req.body.email, link);
         res.status(201).json({
@@ -79,7 +80,7 @@ const signup = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0,
 }));
 exports.signup = signup;
 const sendVerificationEmail = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const link = `http://localhost:8080/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
+    const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
     yield (0, sendMail_1.default)(req.body.email, link);
     res.status(200).json({
         success: true,
@@ -97,14 +98,15 @@ const verifyEmail = (0, asyncHandler_1.default)((req, res, next) => __awaiter(vo
     else {
         const user = jsonwebtoken_1.default.verify(verifyToken, process.env.ACCESS_TOKEN_SECRET);
         if (user) {
-            const userToUpdate = yield user_model_1.User.findOne({ email: user.email });
+            const userToUpdate = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${user.email}'`);
             if (userToUpdate) {
                 if (userToUpdate.emailVerified) {
                     res.send("Email is already verified");
                 }
                 else {
-                    yield user_model_1.User.updateOne({ email: user.email }, { emailVerified: true });
-                    res.send("Email verified successfully");
+                    yield (0, queryExecuter_1.default)(`UPDATE users SET email_verified=${true} WHERE email = ${user.email}`);
+                    res.setHeader("Content-Type", "text/html");
+                    res.send("<p>Email verified successfully, <a href='https://tunetide.vercel.app/login'>Login to your account</a></p>");
                 }
             }
             else {

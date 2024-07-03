@@ -1,7 +1,7 @@
 import app from "./app";
 import dotenv from "dotenv";
-import connect from "./db/db";
 import Razorpay from "razorpay";
+import runStartupQuery from "./utils/startupQuery";
 
 dotenv.config({
   path: "./.env",
@@ -9,13 +9,8 @@ dotenv.config({
 
 const PORT = process.env.PORT;
 
-connect()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-    });
-  })
-  .catch((error: any) => {
-    console.log(error.message);
-    process.exit(1);
-  });
+runStartupQuery();
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});

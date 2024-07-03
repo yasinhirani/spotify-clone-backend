@@ -1,22 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "../../utils/asyncHandler";
-import { User } from "../../model/user/user.model";
 import bcrypt from "bcrypt";
 import generateJsonWebToken from "../../utils/generateJwt";
 import sendMail from "../../utils/sendMail";
 import jwt from "jsonwebtoken";
+import query from "../../utils/queryExecuter";
 
 const login = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = await User.findOne({ email: req.body.email });
-
+    const user = await query(
+      `SELECT * FROM users WHERE email = '${req.body.email}'`
+    );
+    
     if (user) {
       const isPasswordCorrect = await bcrypt.compare(
         req.body.password,
         user.password
       );
       if (isPasswordCorrect) {
-        if (!user.emailVerified) {
+        if (!user.email_verified) {
           const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
             user.email
           )}`;
@@ -26,9 +28,10 @@ const login = asyncHandler(
           success: true,
           message: "Login successfully",
           data: {
+            id: user.id,
             name: user.name,
             email: user.email,
-            emailVerified: user.emailVerified,
+            emailVerified: user.email_verified,
             access_token: generateJsonWebToken(user.email),
           },
         });
@@ -51,7 +54,9 @@ const login = asyncHandler(
 
 const signup = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await query(
+      `SELECT * FROM users WHERE email = '${req.body.email}'`
+    );
 
     if (user) {
       res.status(400).json({
@@ -60,11 +65,12 @@ const signup = asyncHandler(
         data: null,
       });
     } else {
-      const userBody = {
-        ...req.body,
-        emailVerified: false,
-      };
-      await User.create(userBody);
+      const encryptedPassword = await bcrypt.hash(req.body.password, 12);
+      await query(
+        `INSERT INTO users (name, email, password, email_verified) VALUES ('${
+          req.body.name
+        }', '${req.body.email}', '${encryptedPassword}', ${false})`
+      );
 
       const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
         req.body.email
@@ -82,7 +88,7 @@ const signup = asyncHandler(
 
 const sendVerificationEmail = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const link = `http://localhost:8080/api/user/verifyEmail?token=${generateJsonWebToken(
+    const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
       req.body.email
     )}`;
     await sendMail(req.body.email, link);
@@ -111,19 +117,26 @@ const verifyEmail = asyncHandler(
         process.env.ACCESS_TOKEN_SECRET!
       );
       if (user) {
-        const userToUpdate = await User.findOne({ email: user.email });
-        if(userToUpdate){
-          if(userToUpdate.emailVerified){
-            res.send("Email is already verified")
+        const userToUpdate = await query(
+          `SELECT * FROM users WHERE email = '${user.email}'`
+        );
+
+        if (userToUpdate) {
+          if (userToUpdate.emailVerified) {
+            res.send("Email is already verified");
           } else {
-            await User.updateOne(
-              { email: user.email },
-              { emailVerified: true }
+            await query(
+              `UPDATE users SET email_verified=${true} WHERE email = ${
+                user.email
+              }`
             );
-            res.send("Email verified successfully");
+            res.setHeader("Content-Type", "text/html");
+            res.send(
+              "<p>Email verified successfully, <a href='https://tunetide.vercel.app/login'>Login to your account</a></p>"
+            );
           }
-        } else{
-          res.send("User is not available")
+        } else {
+          res.send("User is not available");
         }
       }
     }
