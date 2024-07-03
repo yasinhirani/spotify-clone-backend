@@ -18,21 +18,4 @@ const getPlaylist = asyncHandler(
   }
 );
 
-const getFeaturedPlaylists = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { limit } = req.query;
-    const response = await axiosInstance.get(
-      `/v1/browse/featured-playlists?locale=${process.env.FEATURED_PLAYLIST_LOCALE}&limit=${limit}&offset=0`
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "",
-      data: {
-        featuredPlaylists: response.data,
-      },
-    });
-  }
-);
-
-export { getPlaylist, getFeaturedPlaylists };
+export { getPlaylist };
