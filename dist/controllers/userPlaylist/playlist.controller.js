@@ -15,31 +15,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addSongToPlaylist = exports.createPlaylist = exports.getPlaylistDetail = exports.getPlaylistByUserId = exports.getAllPlaylists = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const queryExecuter_1 = __importDefault(require("../../utils/queryExecuter"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
+const apiError_1 = __importDefault(require("../../utils/apiError"));
 const getAllPlaylists = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const playlists = yield (0, queryExecuter_1.default)(`SELECT * FROM playlists`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            playlists,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ playlists }));
 }));
 exports.getAllPlaylists = getAllPlaylists;
 const getPlaylistByUserId = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const playlists = yield (0, queryExecuter_1.default)(`SELECT * FROM playlists WHERE user_id = ${id}`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            playlists: playlists
-                ? Array.isArray(playlists)
-                    ? playlists
-                    : [playlists]
-                : [],
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({
+        playlists: playlists
+            ? Array.isArray(playlists)
+                ? playlists
+                : [playlists]
+            : [],
+    }));
 }));
 exports.getPlaylistByUserId = getPlaylistByUserId;
 const getPlaylistDetail = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,22 +49,14 @@ GROUP BY playlists.id;`);
                 })
                 : [],
         } });
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            playlist,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ playlist }));
 }));
 exports.getPlaylistDetail = getPlaylistDetail;
 const createPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, queryExecuter_1.default)(`INSERT INTO playlists (name, type, description, user_id) VALUES ('${req.body.name}', 'playlist', '${req.body.description}', '${req.body.userId}')`);
-    res.status(201).json({
-        success: true,
-        message: "Playlist created successfully",
-        data: null,
-    });
+    res
+        .status(201)
+        .json(new apiResponse_1.default(null, "Playlist created successfully"));
 }));
 exports.createPlaylist = createPlaylist;
 const addSongToPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -89,18 +73,10 @@ const addSongToPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awai
             req.body.preview_url,
             id,
         ]);
-        res.status(201).json({
-            success: true,
-            message: "Song added to playlist successfully",
-            data: null,
-        });
+        res.status(201).json(new apiResponse_1.default(null, "Song added to playlist successfully"));
     }
     else {
-        res.status(400).json({
-            success: false,
-            message: "Song is already in the selected Playlist",
-            data: null,
-        });
+        throw new apiError_1.default("Song is already in the selected Playlist", 400);
     }
 }));
 exports.addSongToPlaylist = addSongToPlaylist;

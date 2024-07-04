@@ -1,18 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "../../utils/asyncHandler";
 import query from "../../utils/queryExecuter";
+import ApiResponse from "../../utils/apiResponse";
+import ApiError from "../../utils/apiError";
 
 const getAllPlaylists = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const playlists = await query(`SELECT * FROM playlists`);
 
-    res.status(200).json({
-      success: true,
-      message: "",
-      data: {
-        playlists,
-      },
-    });
+    res.status(200).json(new ApiResponse({ playlists }));
   }
 );
 
@@ -23,17 +19,15 @@ const getPlaylistByUserId = asyncHandler(
       `SELECT * FROM playlists WHERE user_id = ${id}`
     );
 
-    res.status(200).json({
-      success: true,
-      message: "",
-      data: {
+    res.status(200).json(
+      new ApiResponse({
         playlists: playlists
           ? Array.isArray(playlists)
             ? playlists
             : [playlists]
           : [],
-      },
-    });
+      })
+    );
   }
 );
 
@@ -58,13 +52,7 @@ GROUP BY playlists.id;`);
       },
     };
 
-    res.status(200).json({
-      success: true,
-      message: "",
-      data: {
-        playlist,
-      },
-    });
+    res.status(200).json(new ApiResponse({ playlist }));
   }
 );
 
@@ -74,11 +62,9 @@ const createPlaylist = asyncHandler(
       `INSERT INTO playlists (name, type, description, user_id) VALUES ('${req.body.name}', 'playlist', '${req.body.description}', '${req.body.userId}')`
     );
 
-    res.status(201).json({
-      success: true,
-      message: "Playlist created successfully",
-      data: null,
-    });
+    res
+      .status(201)
+      .json(new ApiResponse(null, "Playlist created successfully"));
   }
 );
 
@@ -108,17 +94,9 @@ const addSongToPlaylist = asyncHandler(
         ]
       );
 
-      res.status(201).json({
-        success: true,
-        message: "Song added to playlist successfully",
-        data: null,
-      });
+      res.status(201).json(new ApiResponse(null, "Song added to playlist successfully"));
     } else {
-      res.status(400).json({
-        success: false,
-        message: "Song is already in the selected Playlist",
-        data: null,
-      });
+      throw new ApiError("Song is already in the selected Playlist", 400);
     }
   }
 );

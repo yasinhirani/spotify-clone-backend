@@ -15,27 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getArtistTopTracks = exports.getArtist = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
 const getArtist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const response = yield axiosInstance_1.default.get(`/v1/artists/${id}`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            artist: response.data,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ artist: response.data }));
 }));
 exports.getArtist = getArtist;
 const getArtistTopTracks = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const response = yield axiosInstance_1.default.get(`/v1/artists/${id}/top-tracks`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            tracks: response.data.tracks,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ tracks: response.data.tracks }));
 }));
 exports.getArtistTopTracks = getArtistTopTracks;

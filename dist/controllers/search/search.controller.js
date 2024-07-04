@@ -15,15 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.search = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
 const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.query;
     const response = yield axiosInstance_1.default.get(`/v1/search?q=${query}&type=album,track,artist,playlist&limit=10&offset=0`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            result: response.data,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ result: response.data }));
 }));
 exports.search = search;

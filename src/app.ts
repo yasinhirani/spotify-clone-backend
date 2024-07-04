@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import homepageRouter from "./routes/homepage/homepage.routes";
 import homepageDetailRouter from "./routes/homepage/homepageDetails.routes";
@@ -9,6 +9,7 @@ import albumRouter from "./routes/album/album.routes";
 import playlistRouter from "./routes/playlist/playlist.routes";
 import searchRouter from "./routes/search/search.routes";
 import razorpayRouter from "./routes/razorpay/razorpay.routes";
+import errorHandler from "./utils/errorHandler";
 
 const app = express();
 
@@ -32,12 +33,10 @@ app.use("/api/playlist", playlistRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/create-subscription", razorpayRouter);
 
-app.all("*", (req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    message: `Could not ${req.method} ${req.path}`,
-    data: null,
-  });
+app.all("*", (req: Request, res: Response, next:NextFunction) => {
+  next(new Error(`Could not ${req.method} ${req.path}`));
 });
+
+app.use(errorHandler);
 
 export default app;

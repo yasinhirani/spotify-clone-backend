@@ -19,6 +19,8 @@ const generateJwt_1 = __importDefault(require("../../utils/generateJwt"));
 const sendMail_1 = __importDefault(require("../../utils/sendMail"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const queryExecuter_1 = __importDefault(require("../../utils/queryExecuter"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
+const apiError_1 = __importDefault(require("../../utils/apiError"));
 const login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${req.body.email}'`);
     if (user) {
@@ -28,65 +30,47 @@ const login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, 
                 const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(user.email)}`;
                 yield (0, sendMail_1.default)(user.email, link);
             }
-            res.status(200).json({
-                success: true,
-                message: "Login successfully",
-                data: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    emailVerified: user.email_verified,
-                    access_token: (0, generateJwt_1.default)(user.email),
-                },
-            });
+            res.status(200).json(new apiResponse_1.default({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                emailVerified: user.email_verified,
+                access_token: (0, generateJwt_1.default)(user.email),
+            }, "Login successfully"));
         }
         else {
-            res.status(401).json({
-                success: false,
-                message: "Email or password is incorrect",
-                data: null,
-            });
+            throw new apiError_1.default("Email or password is incorrect", 401);
         }
     }
     else {
-        res.status(404).json({
-            success: false,
-            message: "Email address does not exist",
-            data: null,
-        });
+        throw new apiError_1.default("Email address does not exist", 404);
     }
 }));
 exports.login = login;
 const signup = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${req.body.email}'`);
     if (user) {
-        res.status(400).json({
-            success: false,
-            message: "User with same email address already exist",
-            data: null,
-        });
+        throw new apiError_1.default("User with same email address already exist", 400);
     }
     else {
         const encryptedPassword = yield bcrypt_1.default.hash(req.body.password, 12);
         yield (0, queryExecuter_1.default)(`INSERT INTO users (name, email, password, email_verified) VALUES ('${req.body.name}', '${req.body.email}', '${encryptedPassword}', ${false})`);
         const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
         yield (0, sendMail_1.default)(req.body.email, link);
-        res.status(201).json({
-            success: true,
-            message: "Signup successful",
-            data: null,
-        });
+        res.status(201).json(new apiResponse_1.default(null, "Signup successful"));
     }
 }));
 exports.signup = signup;
 const sendVerificationEmail = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
-    yield (0, sendMail_1.default)(req.body.email, link);
-    res.status(200).json({
-        success: true,
-        message: "Email send successfully",
-        data: null,
-    });
+    const user = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${req.body.email}'`);
+    if (user) {
+        const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${(0, generateJwt_1.default)(req.body.email)}`;
+        yield (0, sendMail_1.default)(req.body.email, link);
+        res.status(200).json(new apiResponse_1.default(null, "Email send successfully"));
+    }
+    else {
+        throw new apiError_1.default("User is not available, Make sure you have signed up first", 404);
+    }
 }));
 exports.sendVerificationEmail = sendVerificationEmail;
 const verifyEmail = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -100,11 +84,11 @@ const verifyEmail = (0, asyncHandler_1.default)((req, res, next) => __awaiter(vo
         if (user) {
             const userToUpdate = yield (0, queryExecuter_1.default)(`SELECT * FROM users WHERE email = '${user.email}'`);
             if (userToUpdate) {
-                if (userToUpdate.emailVerified) {
+                if (userToUpdate.email_verified) {
                     res.send("Email is already verified");
                 }
                 else {
-                    yield (0, queryExecuter_1.default)(`UPDATE users SET email_verified=${true} WHERE email = ${user.email}`);
+                    yield (0, queryExecuter_1.default)(`UPDATE users SET email_verified=${true} WHERE email = '${user.email}'`);
                     res.setHeader("Content-Type", "text/html");
                     res.send("<p>Email verified successfully, <a href='https://tunetide.vercel.app/login'>Login to your account</a></p>");
                 }

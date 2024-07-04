@@ -15,15 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAlbum = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
 const getAlbum = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const response = yield axiosInstance_1.default.get(`/v1/albums/${id}`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            album: response.data,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ album: response.data }));
 }));
 exports.getAlbum = getAlbum;

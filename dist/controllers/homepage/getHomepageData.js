@@ -15,11 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHomepageData = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const homepageData_1 = __importDefault(require("../../data/homepageData"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
 const getHomepageData = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: homepageData_1.default,
-    });
+    res.status(200).json(new apiResponse_1.default(homepageData_1.default));
 }));
 exports.getHomepageData = getHomepageData;

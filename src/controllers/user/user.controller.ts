@@ -5,13 +5,15 @@ import generateJsonWebToken from "../../utils/generateJwt";
 import sendMail from "../../utils/sendMail";
 import jwt from "jsonwebtoken";
 import query from "../../utils/queryExecuter";
+import ApiResponse from "../../utils/apiResponse";
+import ApiError from "../../utils/apiError";
 
 const login = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = await query(
       `SELECT * FROM users WHERE email = '${req.body.email}'`
     );
-    
+
     if (user) {
       const isPasswordCorrect = await bcrypt.compare(
         req.body.password,
@@ -24,30 +26,23 @@ const login = asyncHandler(
           )}`;
           await sendMail(user.email, link);
         }
-        res.status(200).json({
-          success: true,
-          message: "Login successfully",
-          data: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            emailVerified: user.email_verified,
-            access_token: generateJsonWebToken(user.email),
-          },
-        });
+        res.status(200).json(
+          new ApiResponse(
+            {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              emailVerified: user.email_verified,
+              access_token: generateJsonWebToken(user.email),
+            },
+            "Login successfully"
+          )
+        );
       } else {
-        res.status(401).json({
-          success: false,
-          message: "Email or password is incorrect",
-          data: null,
-        });
+        throw new ApiError("Email or password is incorrect", 401);
       }
     } else {
-      res.status(404).json({
-        success: false,
-        message: "Email address does not exist",
-        data: null,
-      });
+      throw new ApiError("Email address does not exist", 404);
     }
   }
 );
@@ -59,11 +54,7 @@ const signup = asyncHandler(
     );
 
     if (user) {
-      res.status(400).json({
-        success: false,
-        message: "User with same email address already exist",
-        data: null,
-      });
+      throw new ApiError("User with same email address already exist", 400);
     } else {
       const encryptedPassword = await bcrypt.hash(req.body.password, 12);
       await query(
@@ -77,27 +68,29 @@ const signup = asyncHandler(
       )}`;
       await sendMail(req.body.email, link);
 
-      res.status(201).json({
-        success: true,
-        message: "Signup successful",
-        data: null,
-      });
+      res.status(201).json(new ApiResponse(null, "Signup successful"));
     }
   }
 );
 
 const sendVerificationEmail = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
-      req.body.email
-    )}`;
-    await sendMail(req.body.email, link);
+    const user = await query(
+      `SELECT * FROM users WHERE email = '${req.body.email}'`
+    );
+    if (user) {
+      const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
+        req.body.email
+      )}`;
+      await sendMail(req.body.email, link);
 
-    res.status(200).json({
-      success: true,
-      message: "Email send successfully",
-      data: null,
-    });
+      res.status(200).json(new ApiResponse(null, "Email send successfully"));
+    } else {
+      throw new ApiError(
+        "User is not available, Make sure you have signed up first",
+        404
+      );
+    }
   }
 );
 
@@ -116,19 +109,19 @@ const verifyEmail = asyncHandler(
         verifyToken,
         process.env.ACCESS_TOKEN_SECRET!
       );
+
       if (user) {
         const userToUpdate = await query(
           `SELECT * FROM users WHERE email = '${user.email}'`
         );
-
         if (userToUpdate) {
-          if (userToUpdate.emailVerified) {
+          if (userToUpdate.email_verified) {
             res.send("Email is already verified");
           } else {
             await query(
-              `UPDATE users SET email_verified=${true} WHERE email = ${
+              `UPDATE users SET email_verified=${true} WHERE email = '${
                 user.email
-              }`
+              }'`
             );
             res.setHeader("Content-Type", "text/html");
             res.send(

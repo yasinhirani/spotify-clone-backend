@@ -15,15 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlaylist = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
+const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
 const getPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const response = yield axiosInstance_1.default.get(`/v1/playlists/${id}?market=IN`);
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: {
-            playlist: response.data,
-        },
-    });
+    res.status(200).json(new apiResponse_1.default({ playlist: response.data }));
 }));
 exports.getPlaylist = getPlaylist;

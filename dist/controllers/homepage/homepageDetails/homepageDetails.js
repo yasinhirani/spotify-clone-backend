@@ -18,35 +18,20 @@ const popularArtists_1 = __importDefault(require("../../../data/popularArtists")
 const popularAlbums_1 = __importDefault(require("../../../data/popularAlbums"));
 const popularRadios_1 = __importDefault(require("../../../data/popularRadios"));
 const featuredCharts_1 = __importDefault(require("../../../data/featuredCharts"));
+const apiResponse_1 = __importDefault(require("../../../utils/apiResponse"));
 const getPopularArtists = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: popularArtists_1.default,
-    });
+    res.status(200).json(new apiResponse_1.default(popularArtists_1.default));
 }));
 exports.getPopularArtists = getPopularArtists;
 const getPopularAlbums = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: popularAlbums_1.default,
-    });
+    res.status(200).json(new apiResponse_1.default(popularAlbums_1.default));
 }));
 exports.getPopularAlbums = getPopularAlbums;
 const getPopularRadios = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: popularRadios_1.default,
-    });
+    res.status(200).json(new apiResponse_1.default(popularRadios_1.default));
 }));
 exports.getPopularRadios = getPopularRadios;
 const getFeaturedCharts = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({
-        success: true,
-        message: "",
-        data: featuredCharts_1.default,
-    });
+    res.status(200).json(new apiResponse_1.default(featuredCharts_1.default));
 }));
 exports.getFeaturedCharts = getFeaturedCharts;

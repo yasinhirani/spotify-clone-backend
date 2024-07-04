@@ -14,6 +14,7 @@ const album_routes_1 = __importDefault(require("./routes/album/album.routes"));
 const playlist_routes_1 = __importDefault(require("./routes/playlist/playlist.routes"));
 const search_routes_1 = __importDefault(require("./routes/search/search.routes"));
 const razorpay_routes_1 = __importDefault(require("./routes/razorpay/razorpay.routes"));
+const errorHandler_1 = __importDefault(require("./utils/errorHandler"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: "*",
@@ -29,11 +30,8 @@ app.use("/api/album", album_routes_1.default);
 app.use("/api/playlist", playlist_routes_1.default);
 app.use("/api/search", search_routes_1.default);
 app.use("/api/create-subscription", razorpay_routes_1.default);
-app.all("*", (req, res) => {
-    res.status(404).json({
-        success: false,
-        message: `Could not ${req.method} ${req.path}`,
-        data: null,
-    });
+app.all("*", (req, res, next) => {
+    next(new Error(`Could not ${req.method} ${req.path}`));
 });
+app.use(errorHandler_1.default);
 exports.default = app;
