@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "../../utils/asyncHandler";
 import axiosInstance from "../../utils/axiosInstance";
 import ApiResponse from "../../utils/apiResponse";
+import axios from "axios";
+import { stringify, parse } from "flatted";
 
 const search = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -15,4 +17,22 @@ const search = asyncHandler(
   }
 );
 
-export { search };
+const searchSong = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { query } = req.query;
+
+    const langs = "hindi,english";
+
+    const response = await fetch(`https://www.jiosaavn.com/api.php?__call=search.getResults&_format=json&_marker=0&api_version=4&ctx=web6dot0&q=${query}&p=0&n=10`, {
+      headers: {
+        cookie: `L=${langs}; gdpr_acceptance=true; DL=english`,
+      },
+    });
+
+    const data = await response.json();
+    // res.status(200).json(new ApiResponse({ result: response.data.results }));
+    res.send(data);
+  }
+);
+
+export { search, searchSong };

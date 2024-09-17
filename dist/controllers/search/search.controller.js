@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.search = void 0;
+exports.searchSong = exports.search = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
@@ -22,3 +22,16 @@ const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0,
     res.status(200).json(new apiResponse_1.default({ result: response.data }));
 }));
 exports.search = search;
+const searchSong = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { query } = req.query;
+    const langs = "hindi,english";
+    const response = yield fetch(`https://www.jiosaavn.com/api.php?__call=search.getResults&_format=json&_marker=0&api_version=4&ctx=web6dot0&q=${query}&p=0&n=10`, {
+        headers: {
+            cookie: `L=${langs}; gdpr_acceptance=true; DL=english`,
+        },
+    });
+    const data = yield response.json();
+    // res.status(200).json(new ApiResponse({ result: response.data.results }));
+    res.send(data);
+}));
+exports.searchSong = searchSong;

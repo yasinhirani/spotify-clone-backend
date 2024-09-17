@@ -7,4 +7,5 @@ const express_1 = __importDefault(require("express"));
 const search_controller_1 = require("../../controllers/search/search.controller");
 const router = express_1.default.Router();
 router.route("/").get(search_controller_1.search);
+router.route("/song").get(search_controller_1.searchSong);
 exports.default = router;
