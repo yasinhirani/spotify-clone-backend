@@ -16,6 +16,7 @@ exports.searchSong = exports.search = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
+const createDownloadURL_1 = require("../../utils/createDownloadURL");
 const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.query;
     const response = yield axiosInstance_1.default.get(`/v1/search?q=${query}&type=album,track,artist,playlist&limit=10&offset=0`);
@@ -31,7 +32,15 @@ const searchSong = (0, asyncHandler_1.default)((req, res, next) => __awaiter(voi
         },
     });
     const data = yield response.json();
-    // res.status(200).json(new ApiResponse({ result: response.data.results }));
-    res.send(data);
+    const songsData = data.results.map((songData) => {
+        var _a, _b;
+        return {
+            downloadUrl: (0, createDownloadURL_1.createDownloadLinks)((_a = songData.more_info) === null || _a === void 0 ? void 0 : _a.encrypted_media_url),
+            artists: {
+                primary: (_b = songData.more_info) === null || _b === void 0 ? void 0 : _b.artistMap.primary_artists
+            }
+        };
+    });
+    res.status(200).json(new apiResponse_1.default({ results: songsData }));
 }));
 exports.searchSong = searchSong;

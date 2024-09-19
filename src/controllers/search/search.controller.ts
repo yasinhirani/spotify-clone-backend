@@ -4,6 +4,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import ApiResponse from "../../utils/apiResponse";
 import axios from "axios";
 import { stringify, parse } from "flatted";
+import { createDownloadLinks } from "../../utils/createDownloadURL";
 
 const search = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -30,8 +31,17 @@ const searchSong = asyncHandler(
     });
 
     const data = await response.json();
-    // res.status(200).json(new ApiResponse({ result: response.data.results }));
-    res.send(data);
+
+    const songsData: any = data.results.map((songData: any) => {
+      return {
+        downloadUrl: createDownloadLinks(songData.more_info?.encrypted_media_url),
+        artists: {
+          primary: songData.more_info?.artistMap.primary_artists
+        }
+      }
+    });
+
+    res.status(200).json(new ApiResponse({ results: songsData }));
   }
 );
 
