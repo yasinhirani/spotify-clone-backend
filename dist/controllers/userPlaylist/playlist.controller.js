@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addSongToPlaylist = exports.createPlaylist = exports.getPlaylistDetail = exports.getPlaylistByUserId = exports.getAllPlaylists = void 0;
+exports.deleteSongFromPlaylist = exports.addSongToPlaylist = exports.createPlaylist = exports.getPlaylistDetail = exports.getPlaylistByUserId = exports.getAllPlaylists = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const queryExecuter_1 = __importDefault(require("../../utils/queryExecuter"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
@@ -73,10 +73,24 @@ const addSongToPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awai
             req.body.preview_url,
             id,
         ]);
-        res.status(201).json(new apiResponse_1.default(null, "Song added to playlist successfully"));
+        res
+            .status(201)
+            .json(new apiResponse_1.default(null, "Song added to playlist successfully"));
     }
     else {
         throw new apiError_1.default("Song is already in the selected Playlist", 400);
     }
 }));
 exports.addSongToPlaylist = addSongToPlaylist;
+const deleteSongFromPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const song = yield (0, queryExecuter_1.default)(`SELECT * FROM songs WHERE id = '${id}'`);
+    if (song) {
+        yield (0, queryExecuter_1.default)(`DELETE FROM songs WHERE id = '${id}'`);
+        res.sendStatus(204);
+    }
+    else {
+        throw new apiError_1.default("Song is not available in the playlist", 404);
+    }
+}));
+exports.deleteSongFromPlaylist = deleteSongFromPlaylist;

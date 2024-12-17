@@ -11,4 +11,5 @@ router.route("/:id").get(playlist_controller_1.getPlaylistByUserId);
 router.route("/:id/detail").get(playlist_controller_1.getPlaylistDetail);
 router.route("/create").post(playlist_controller_1.createPlaylist);
 router.route("/:id/addSongs").post(playlist_controller_1.addSongToPlaylist);
+router.route("/:id/deleteSong").delete(playlist_controller_1.deleteSongFromPlaylist);
 exports.default = router;

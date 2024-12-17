@@ -94,9 +94,27 @@ const addSongToPlaylist = asyncHandler(
         ]
       );
 
-      res.status(201).json(new ApiResponse(null, "Song added to playlist successfully"));
+      res
+        .status(201)
+        .json(new ApiResponse(null, "Song added to playlist successfully"));
     } else {
       throw new ApiError("Song is already in the selected Playlist", 400);
+    }
+  }
+);
+
+const deleteSongFromPlaylist = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const song = await query(`SELECT * FROM songs WHERE id = '${id}'`);
+
+    if (song) {
+      await query(`DELETE FROM songs WHERE id = '${id}'`);
+
+      res.sendStatus(204);
+    } else {
+      throw new ApiError("Song is not available in the playlist", 404);
     }
   }
 );
@@ -107,4 +125,5 @@ export {
   getPlaylistDetail,
   createPlaylist,
   addSongToPlaylist,
+  deleteSongFromPlaylist
 };

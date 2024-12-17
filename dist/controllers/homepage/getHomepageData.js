@@ -14,9 +14,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHomepageData = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
-const homepageData_1 = __importDefault(require("../../data/homepageData"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
+const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
+const homepageData_1 = __importDefault(require("../../data/homepageData"));
 const getHomepageData = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json(new apiResponse_1.default(homepageData_1.default));
+    const response = yield axiosInstance_1.default.get(`/v1/search?q=bollywood&type=playlist&limit=10&offset=0`);
+    const updatedResponse = [
+        {
+            id: 5,
+            title: "Popular Playlists",
+            type: "playlist",
+            contents: {
+                items: response.data.playlists.items
+                    .filter((item) => item)
+                    .map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    type: item.type,
+                    images: item.images,
+                    description: item.description
+                })),
+            },
+        },
+        ...homepageData_1.default.items,
+    ];
+    res.status(200).json(new apiResponse_1.default(updatedResponse));
 }));
 exports.getHomepageData = getHomepageData;
