@@ -8,4 +8,5 @@ const search_controller_1 = require("../../controllers/search/search.controller"
 const router = express_1.default.Router();
 router.route("/").get(search_controller_1.search);
 router.route("/song").get(search_controller_1.searchSong);
+router.route("/song/alternate").get(search_controller_1.getAlternateUrl);
 exports.default = router;

@@ -4,6 +4,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import ApiResponse from "../../utils/apiResponse";
 import axios from "axios";
 import { createDownloadLinks } from "../../utils/createDownloadURL";
+import { getAlternateAudioUrl } from "../../utils/getAlternateAudioUrl";
 
 const search = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -44,4 +45,13 @@ const searchSong = asyncHandler(
   }
 );
 
-export { search, searchSong };
+
+const getAlternateUrl = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const {songName, artistName} = req.query;
+
+  const alternateUrl = await getAlternateAudioUrl(songName as string, artistName as string);
+
+  res.status(200).json(new ApiResponse({url: alternateUrl}))
+})
+
+export { search, searchSong, getAlternateUrl };
