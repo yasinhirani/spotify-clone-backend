@@ -21,7 +21,12 @@ function getAlternateAudioUrl(songName, artist) {
         const response = yield axios_1.default.get(url);
         if (response.data.items.length === 0)
             return null;
-        const youtubeVideoUrl = `https://www.youtube.com/watch?v=${response.data.items[0].id.videoId}`;
-        return youtubeVideoUrl;
+        const alternateUrl = yield axios_1.default.get(`https://youtube-mp36.p.rapidapi.com/dl?id=${response.data.items[0].id.videoId}`, {
+            headers: {
+                "x-rapidapi-key": process.env.RAPID_API_KEY,
+                "x-rapidapi-host": process.env.RAPID_API_HOST,
+            },
+        });
+        return alternateUrl.data.link;
     });
 }

@@ -7,7 +7,15 @@ export async function getAlternateAudioUrl(songName: string, artist: string) {
   const response = await axios.get(url);
   if (response.data.items.length === 0) return null;
 
-  const youtubeVideoUrl = `https://www.youtube.com/watch?v=${response.data.items[0].id.videoId}`;
+  const alternateUrl = await axios.get(
+    `https://youtube-mp36.p.rapidapi.com/dl?id=${response.data.items[0].id.videoId}`,
+    {
+      headers: {
+        "x-rapidapi-key": process.env.RAPID_API_KEY,
+        "x-rapidapi-host": process.env.RAPID_API_HOST,
+      },
+    }
+  );
 
-  return youtubeVideoUrl;
+  return alternateUrl.data.link;
 }
