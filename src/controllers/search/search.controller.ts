@@ -22,21 +22,15 @@ const searchSong = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { query } = req.query;
 
-    const langs = "hindi,english";
-
-    const response = await fetch(`https://www.jiosaavn.com/api.php?__call=search.getResults&_format=json&_marker=0&api_version=4&ctx=web6dot0&q=${query}&p=0&n=10`, {
-      headers: {
-        cookie: `L=${langs}; gdpr_acceptance=true; DL=english`,
-      },
-    });
+    const response = await fetch(`${process.env.GET_SONG_URL}/api/search/songs?query=${query}&page=0&limit=10`);
 
     const data = await response.json();
 
-    const songsData: any = data.results.map((songData: any) => {
+    const songsData: any = data.data.results.map((songData: any) => {
       return {
-        downloadUrl: createDownloadLinks(songData.more_info?.encrypted_media_url),
+        downloadUrl: songData?.downloadUrl ?? [],
         artists: {
-          primary: songData.more_info?.artistMap.primary_artists
+          primary: songData?.artists?.primary ?? []
         }
       }
     });

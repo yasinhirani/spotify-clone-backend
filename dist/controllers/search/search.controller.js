@@ -16,7 +16,6 @@ exports.getAlternateUrl = exports.searchSong = exports.search = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
-const createDownloadURL_1 = require("../../utils/createDownloadURL");
 const getAlternateAudioUrl_1 = require("../../utils/getAlternateAudioUrl");
 const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.query;
@@ -26,19 +25,14 @@ const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0,
 exports.search = search;
 const searchSong = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.query;
-    const langs = "hindi,english";
-    const response = yield fetch(`https://www.jiosaavn.com/api.php?__call=search.getResults&_format=json&_marker=0&api_version=4&ctx=web6dot0&q=${query}&p=0&n=10`, {
-        headers: {
-            cookie: `L=${langs}; gdpr_acceptance=true; DL=english`,
-        },
-    });
+    const response = yield fetch(`${process.env.GET_SONG_URL}/api/search/songs?query=${query}&page=0&limit=10`);
     const data = yield response.json();
-    const songsData = data.results.map((songData) => {
-        var _a, _b;
+    const songsData = data.data.results.map((songData) => {
+        var _a, _b, _c;
         return {
-            downloadUrl: (0, createDownloadURL_1.createDownloadLinks)((_a = songData.more_info) === null || _a === void 0 ? void 0 : _a.encrypted_media_url),
+            downloadUrl: (_a = songData === null || songData === void 0 ? void 0 : songData.downloadUrl) !== null && _a !== void 0 ? _a : [],
             artists: {
-                primary: (_b = songData.more_info) === null || _b === void 0 ? void 0 : _b.artistMap.primary_artists
+                primary: (_c = (_b = songData === null || songData === void 0 ? void 0 : songData.artists) === null || _b === void 0 ? void 0 : _b.primary) !== null && _c !== void 0 ? _c : []
             }
         };
     });
