@@ -22,18 +22,16 @@ const searchSong = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { query } = req.query;
 
-    const response = await fetch(`${process.env.GET_SONG_URL}/api/search/songs?query=${query}&page=0&limit=10`);
-
-    const data = await response.json();
-
-    const songsData: any = data.data.results.map((songData: any) => {
-      return {
-        downloadUrl: songData?.downloadUrl ?? [],
-        artists: {
-          primary: songData?.artists?.primary ?? []
-        }
-      }
-    });
+    const response = await axios.get(
+      `${process.env.GET_SONG_URL}?p=1&q=${query}&_format=json&_marker=0&api_version=4&ctx=web6dot0&n=20&__call=search.getResults`
+    );
+  
+    const songsData = response.data.results.map((result: any) => ({
+      artists: {
+        primary: result?.more_info?.artistMap?.primary_artists
+      },
+      downloadUrl: createDownloadLinks(result?.more_info?.encrypted_media_url)
+    }))
 
     res.status(200).json(new ApiResponse({ results: songsData }));
   }

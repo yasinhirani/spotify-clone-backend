@@ -16,6 +16,8 @@ exports.getAlternateUrl = exports.searchSong = exports.search = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
+const axios_1 = __importDefault(require("axios"));
+const createDownloadURL_1 = require("../../utils/createDownloadURL");
 const getAlternateAudioUrl_1 = require("../../utils/getAlternateAudioUrl");
 const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.query;
@@ -25,16 +27,15 @@ const search = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0,
 exports.search = search;
 const searchSong = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.query;
-    const response = yield fetch(`${process.env.GET_SONG_URL}/api/search/songs?query=${query}&page=0&limit=10`);
-    const data = yield response.json();
-    const songsData = data.data.results.map((songData) => {
+    const response = yield axios_1.default.get(`${process.env.GET_SONG_URL}?p=1&q=${query}&_format=json&_marker=0&api_version=4&ctx=web6dot0&n=20&__call=search.getResults`);
+    const songsData = response.data.results.map((result) => {
         var _a, _b, _c;
-        return {
-            downloadUrl: (_a = songData === null || songData === void 0 ? void 0 : songData.downloadUrl) !== null && _a !== void 0 ? _a : [],
+        return ({
             artists: {
-                primary: (_c = (_b = songData === null || songData === void 0 ? void 0 : songData.artists) === null || _b === void 0 ? void 0 : _b.primary) !== null && _c !== void 0 ? _c : []
-            }
-        };
+                primary: (_b = (_a = result === null || result === void 0 ? void 0 : result.more_info) === null || _a === void 0 ? void 0 : _a.artistMap) === null || _b === void 0 ? void 0 : _b.primary_artists
+            },
+            downloadUrl: (0, createDownloadURL_1.createDownloadLinks)((_c = result === null || result === void 0 ? void 0 : result.more_info) === null || _c === void 0 ? void 0 : _c.encrypted_media_url)
+        });
     });
     res.status(200).json(new apiResponse_1.default({ results: songsData }));
 }));
