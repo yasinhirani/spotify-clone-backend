@@ -17,8 +17,10 @@ const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const apiResponse_1 = __importDefault(require("../../utils/apiResponse"));
 const axiosInstance_1 = __importDefault(require("../../utils/axiosInstance"));
 const homepageData_1 = __importDefault(require("../../data/homepageData"));
+const popularPlaylistSearchKeywords_1 = require("../../data/popularPlaylistSearchKeywords");
 const getHomepageData = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield axiosInstance_1.default.get(`/v1/search?q=bollywood&type=playlist&limit=10&offset=0`);
+    const keyword = Math.floor(Math.random() * popularPlaylistSearchKeywords_1.popularPlaylistSearchKeywords.length);
+    const response = yield axiosInstance_1.default.get(`/v1/search?q=${popularPlaylistSearchKeywords_1.popularPlaylistSearchKeywords[keyword]}&type=playlist&limit=10&offset=0`);
     const updatedResponse = [
         {
             id: 5,
@@ -32,7 +34,7 @@ const getHomepageData = (0, asyncHandler_1.default)((req, res, next) => __awaite
                     name: item.name,
                     type: item.type,
                     images: item.images,
-                    description: item.description
+                    description: item.description,
                 })),
             },
         },
