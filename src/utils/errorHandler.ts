@@ -15,7 +15,7 @@ const handleJwtExpireError = () => {
 const errorResponseDev = (err: any, res: Response) => {
   res.status(err.statusCode).json({
     success: false,
-    error: err,
+    // error: err,
     message: err.message,
     data: null,
   });

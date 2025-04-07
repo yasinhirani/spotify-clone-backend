@@ -7,14 +7,15 @@ import {
   getPlaylistByUserId,
   getPlaylistDetail,
 } from "../../controllers/userPlaylist/playlist.controller";
+import { validateToken } from "../../utils/validateToken";
 
 const router = express.Router();
 
-router.route("/").get(getAllPlaylists);
-router.route("/:id").get(getPlaylistByUserId);
-router.route("/:id/detail").get(getPlaylistDetail);
-router.route("/create").post(createPlaylist);
-router.route("/:id/addSongs").post(addSongToPlaylist);
-router.route("/:id/deleteSong").delete(deleteSongFromPlaylist);
+// router.route("/").get(getAllPlaylists);
+router.route("/:id").get(validateToken, getPlaylistByUserId);
+router.route("/:id/detail").get(validateToken, getPlaylistDetail);
+router.route("/create").post(validateToken, createPlaylist);
+router.route("/:id/addSongs").post(validateToken, addSongToPlaylist);
+router.route("/:id/deleteSong").delete(validateToken, deleteSongFromPlaylist);
 
 export default router;

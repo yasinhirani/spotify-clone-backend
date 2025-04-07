@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "../../utils/asyncHandler";
 import bcrypt from "bcrypt";
-import generateJsonWebToken from "../../utils/generateJwt";
+import {generateJsonWebToken, generateJsonWebTokenEmail} from "../../utils/generateJwt";
 import sendMail from "../../utils/sendMail";
 import jwt from "jsonwebtoken";
 import query from "../../utils/queryExecuter";
@@ -33,7 +33,7 @@ const login = asyncHandler(
               name: user.name,
               email: user.email,
               emailVerified: user.email_verified,
-              access_token: generateJsonWebToken(user.email),
+              access_token: generateJsonWebToken(user.email, user.id),
             },
             "Login successfully"
           )
@@ -63,7 +63,7 @@ const signup = asyncHandler(
         }', '${req.body.email}', '${encryptedPassword}', ${false})`
       );
 
-      const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
+      const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebTokenEmail(
         req.body.email
       )}`;
       await sendMail(req.body.email, link);
@@ -79,7 +79,7 @@ const sendVerificationEmail = asyncHandler(
       `SELECT * FROM users WHERE email = '${req.body.email}'`
     );
     if (user) {
-      const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebToken(
+      const link = `https://tunetide-api.vercel.app/api/user/verifyEmail?token=${generateJsonWebTokenEmail(
         req.body.email
       )}`;
       await sendMail(req.body.email, link);
