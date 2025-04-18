@@ -100,7 +100,7 @@ const addSongToPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awai
 exports.addSongToPlaylist = addSongToPlaylist;
 const deleteSongFromPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const song = yield (0, queryExecuter_1.default)(`SELECT s.id AS song_id, p.user_id as user_id FROM songs s LEFT JOIN playlists p ON p.id = s.playlist_id WHERE s.id = '${id}'`);
+    const song = yield (0, queryExecuter_1.default)(`SELECT s.id AS song_id, p.user_id as user_id FROM songs s LEFT JOIN playlists p ON p.id = s.playlist_id WHERE s.id = '${id}' AND p.user_id = ${req.user.userId};`);
     if (song) {
         if (song.user_id.toString() !== req.user.userId.toString()) {
             throw new apiError_1.default("You cannot delete song someone else playlist", 403);

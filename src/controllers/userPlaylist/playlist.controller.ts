@@ -132,7 +132,7 @@ const deleteSongFromPlaylist = asyncHandler(
     const { id } = req.params;
 
     const song = await query(
-      `SELECT s.id AS song_id, p.user_id as user_id FROM songs s LEFT JOIN playlists p ON p.id = s.playlist_id WHERE s.id = '${id}'`
+      `SELECT s.id AS song_id, p.user_id as user_id FROM songs s LEFT JOIN playlists p ON p.id = s.playlist_id WHERE s.id = '${id}' AND p.user_id = ${req.user.userId};`
     );
 
     if (song) {
