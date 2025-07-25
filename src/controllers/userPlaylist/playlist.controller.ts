@@ -68,7 +68,7 @@ GROUP BY playlists.id;`);
 
 const createPlaylist = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    if (req.body.userId !== req.user.userId.toString()) {
+    if (req.body.userId.toString() !== req.user.userId.toString()) {
       throw new ApiError("You can create playlist for yourself only", 403);
     }
 

@@ -59,7 +59,7 @@ GROUP BY playlists.id;`);
 }));
 exports.getPlaylistDetail = getPlaylistDetail;
 const createPlaylist = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (req.body.userId !== req.user.userId.toString()) {
+    if (req.body.userId.toString() !== req.user.userId.toString()) {
         throw new apiError_1.default("You can create playlist for yourself only", 403);
     }
     yield (0, queryExecuter_1.default)(`INSERT INTO playlists (name, type, description, user_id) VALUES ('${req.body.name}', 'playlist', '${req.body.description}', '${req.body.userId}')`);
